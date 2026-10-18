@@ -1,7 +1,6 @@
 use pipl::*;
 
 fn main() {
-    // After Effects / Premiere が読む PiPL リソースを生成する
     pipl::plugin_build(vec![
         Property::Kind(PIPLType::AEEffect),
         Property::Name("SVG Stroke"),
@@ -16,9 +15,10 @@ fn main() {
         Property::AE_Effect_Spec_Version { major: 13, minor: 28 },
         Property::AE_Effect_Version { version: 1, subversion: 0, bugversion: 0, stage: Stage::Develop, build: 1 },
         Property::AE_Effect_Info_Flags(0),
-        // PF_OutFlag_PIX_INDEPENDENT | PF_OutFlag_USE_OUTPUT_EXTENT | PF_OutFlag_I_EXPAND_BUFFER
-        Property::AE_Effect_Global_OutFlags(OutFlags::PixIndependent | OutFlags::UseOutputExtent | OutFlags::IExpandBuffer),
+        Property::AE_Effect_Global_OutFlags(OutFlags::empty()),
         Property::AE_Effect_Global_OutFlags_2(OutFlags2::FloatColorAware | OutFlags2::SupportsThreadedRendering),
         Property::AE_Effect_Match_Name("JP SVG_Stroke"),
+        Property::AE_Reserved_Info(8),
+        Property::AE_Effect_Support_URL("https://github.com/elxo-9/Premiere"),
     ]);
 }
