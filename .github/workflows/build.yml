@@ -1,0 +1,27 @@
+name: build
+on: [push, workflow_dispatch]
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+      - run: |
+          cargo build --release --target x86_64-apple-darwin
+          cargo build --release --target aarch64-apple-darwin
+          mkdir -p SVG_Stroke.plugin/Contents/{MacOS,Resources}
+          lipo -create target/x86_64-apple-darwin/release/libsvg_stroke.dylib target/aarch64-apple-darwin/release/libsvg_stroke.dylib -output SVG_Stroke.plugin/Contents/MacOS/SVG_Stroke
+          cp macos/Info.plist SVG_Stroke.plugin/Contents/Info.plist
+          printf 'eFKTFXTC' > SVG_Stroke.plugin/Contents/PkgInfo
+          cp target/aarch64-apple-darwin/release/build/*/out/*.rsrc SVG_Stroke.plugin/Contents/Resources/SVG_Stroke.rsrc 2>/dev/null || true
+          codesign --force --deep -s - SVG_Stroke.plugin
+      - uses: actions/upload-artifact@v4
+        with: { name: SVG_Stroke_mac, path: SVG_Stroke.plugin }
+  win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+      - run: copy target\release\svg_stroke.dll SVG_Stroke.aex
+      - uses: actions/upload-artifact@v4
+        with: { name: SVG_Stroke_win, path: SVG_Stroke.aex }
